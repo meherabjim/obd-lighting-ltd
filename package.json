@@ -1,0 +1,14 @@
+{
+  "name": "obd-lighting",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OBD Lighting — marketing website. React + Node.js (Express) + MySQL.",
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.js",
+    "dev": "node dev.js",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  },
+  "engines": { "node": ">=18" }
+}

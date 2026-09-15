@@ -1,0 +1,9 @@
+OBD LIGHTING LTD — v10
+
+  Expand-Archive "$HOME\Downloads\obd-v10.zip" "$HOME\Downloads\obd-v10-tmp" -Force
+  Copy-Item "$HOME\Downloads\obd-v10-tmp\obd-v10\*" "$HOME\Downloads\obd-lighting\obd-lighting" -Recurse -Force
+  Remove-Item "$HOME\Downloads\obd-v10-tmp" -Recurse -Force
+  npm run dev
+
+১. লগইন পেজে "← Back to the website" লিংক বসেছে।
+২. Sign out চাপলে এখন সরাসরি ওয়েবসাইটে যাবে, লগইন পেজে আটকে থাকবে না।
