@@ -7,13 +7,20 @@ export const pool = mysql.createPool({
   user: config.db.user,
   password: config.db.password,
   database: config.db.database,
+
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
   charset: 'utf8mb4',
-  // DECIMAL columns arrive as strings by default; we want numbers in JSON.
+
+  // TiDB Serverless SSL connection
+  ssl: {
+    rejectUnauthorized: true,
+  },
+
   decimalNumbers: true,
 });
+
 
 /** Run a query, get the rows. */
 export async function query(sql, params = []) {
@@ -21,11 +28,13 @@ export async function query(sql, params = []) {
   return rows;
 }
 
+
 /** Run a query, get the first row or null. */
 export async function queryOne(sql, params = []) {
   const rows = await query(sql, params);
   return rows.length ? rows[0] : null;
 }
+
 
 /** Run an INSERT/UPDATE/DELETE, get the result metadata. */
 export async function execute(sql, params = []) {
@@ -33,29 +42,35 @@ export async function execute(sql, params = []) {
   return result;
 }
 
+
 /**
- * Run several statements as one unit. Throw inside the callback to roll
- * everything back — used when a product and its spec rows must save together.
+ * Run several statements as one unit.
  */
 export async function withTransaction(callback) {
   const conn = await pool.getConnection();
+
   try {
     await conn.beginTransaction();
     const result = await callback(conn);
     await conn.commit();
     return result;
+
   } catch (err) {
     await conn.rollback();
     throw err;
+
   } finally {
     conn.release();
   }
 }
 
+
 export async function assertDbConnection() {
   const conn = await pool.getConnection();
+
   try {
     await conn.ping();
+
   } finally {
     conn.release();
   }
