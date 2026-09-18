@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Add this line once the domain is bought:
+# Sitemap: https://YOUR-DOMAIN/sitemap.xml

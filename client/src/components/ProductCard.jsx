@@ -38,7 +38,11 @@ export default function ProductCard({ product }) {
 
   return (
     <article className="p-card">
-      <Link className="p-art" to={`/product/${product.slug}`} aria-label={tf(product, 'name')}>
+      <Link
+        className={product.image ? 'p-art' : 'p-art p-art-empty'}
+        to={`/product/${product.slug}`}
+        aria-label={tf(product, 'name')}
+      >
         <span className="flags"><StockPills product={product} /></span>
         {product.image
           ? <img src={product.image} alt={tf(product, 'name')} loading="lazy" />

@@ -55,7 +55,7 @@ export default function Product() {
 
       <div className="pdp">
         <div>
-          <div className="pdp-art">
+          <div className={p.image ? 'pdp-art' : 'pdp-art p-art-empty'}>
             <span className="flags"><StockPills product={p} /></span>
             {p.image ? <img src={p.image} alt={tf(p, 'name')} />
                      : <NoPhoto name={p.name} sku={p.sku} size={210} />}

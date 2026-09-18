@@ -135,7 +135,10 @@ function Hero() {
             </div>
 
             <div className="scene-wrap">
-              <Link className="scene hero-shot" to={`/product/${p.slug}`}>
+              <Link
+                className={p.image ? 'scene hero-shot' : 'scene hero-shot p-art-empty'}
+                to={`/product/${p.slug}`}
+              >
                 {p.image
                   ? <img src={p.image} alt={tf(p, 'name')} />
                   : <NoPhoto name={p.name} sku={p.sku} size={220} />}

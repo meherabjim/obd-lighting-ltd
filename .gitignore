@@ -11,3 +11,6 @@ dist/
 .DS_Store
 
 *.zip
+
+# database backups written by `npm run db:push -- --backup-first`
+database/backup-*.sql

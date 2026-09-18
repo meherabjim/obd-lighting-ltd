@@ -1,15 +1,15 @@
 /**
- * API Client
+ * Every call to the Express server goes through here.
  *
- * Local:
- *   VITE_API_URL=http://localhost:4000
+ * Where the API lives is decided at build time by VITE_API_URL:
+ *   .env.development  (empty)  -> same origin; Vite proxies /api to :4000
+ *   .env.production            -> https://obdlighting-api.onrender.com
  *
- * Production:
- *   VITE_API_URL=https://obdlighting-api.onrender.com
+ * With no value set it falls back to the SAME ORIGIN, never to localhost —
+ * a built site that points at localhost shows a visitor an empty catalogue,
+ * and over https the browser blocks the call outright.
  */
-
-const API_BASE =
-  import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API_BASE = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
 
 
 const TOKEN_KEY = "obd.admin.token";

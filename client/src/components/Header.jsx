@@ -42,10 +42,10 @@ export default function Header() {
       <div className="util">
         <div className="wrap">
           <span><strong>{site.phoneDisplay}</strong></span>
-          <span className="dot" /><span>{site.email}</span>
-          <span className="dot" /><span>{tf(site, 'footerNote')}</span>
+          <span className="dot util-mail" /><span className="util-mail">{site.email}</span>
+          <span className="dot util-note" /><span className="util-note">{tf(site, 'footerNote')}</span>
           <span className="spacer" />
-          <Link to="/projects">{t('Get a trade account')}</Link>
+          <Link className="util-trade" to="/projects">{t('Get a trade account')}</Link>
           {/* Signed out: a quiet way in for the owner. Signed in as admin:
               the same slot shows who is signed in and goes back to the
               dashboard. A non-admin account sees neither. */}

@@ -17,6 +17,18 @@ export function errorHandler(err, req, res, next) {
     err = new ApiError(503, 'Cannot reach the database. Check MySQL is running and server/.env is correct.');
   }
 
+  // A browser calling from an origin we do not allow: that is a 403, not a crash.
+  if (err && /is not allowed to call this API/.test(err.message || '')) {
+    err = new ApiError(403, 'This site is not allowed to use the API.');
+  }
+  // multer's own errors (file too big, too many files) are the caller's fault.
+  if (err && err.name === 'MulterError') {
+    const msg = err.code === 'LIMIT_FILE_SIZE'
+      ? 'That photo is larger than 4 MB. Please use a smaller one.'
+      : 'That upload was rejected.';
+    err = new ApiError(400, msg);
+  }
+
   const status = err instanceof ApiError ? err.status : 500;
   if (status >= 500) console.error('[error]', err);
 

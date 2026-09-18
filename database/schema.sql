@@ -86,8 +86,14 @@ CREATE TABLE products (
   INDEX idx_products_category (category_id, is_active),
   INDEX idx_products_wattage   (wattage),
   INDEX idx_products_cct       (cct),
-  INDEX idx_products_featured  (is_featured, is_active),
-  FULLTEXT KEY ft_products (name, name_bn, sku)
+  INDEX idx_products_featured  (is_featured, is_active)
+  -- No FULLTEXT index. The search in routes/catalogue.js uses LIKE, not
+  -- MATCH ... AGAINST, because LIKE handles Bangla and partial SKUs
+  -- predictably — so a full-text index was never read by anything. It also
+  -- could not be created on TiDB, which indexes one column at a time. A
+  -- plain index would not help either: '%term%' cannot use one. With a few
+  -- hundred products the scan is instant; past a few thousand, the answer is
+  -- TiDB's own full-text search, not this.
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- One row per spec line, so the admin can add or reorder spec rows

@@ -13,10 +13,14 @@ export const pool = mysql.createPool({
   queueLimit: 0,
   charset: 'utf8mb4',
 
-  // TiDB Serverless SSL connection
-  ssl: {
-    rejectUnauthorized: true,
-  },
+  // TiDB Serverless requires TLS; a local MySQL/MariaDB usually has none at
+  // all, and asking for it there makes the connection fail. So it follows the
+  // host: any TiDB Cloud address (or DB_SSL=true) gets a verified TLS
+  // connection, anything else connects plain.
+  ...(config.db.ssl ? { ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true } } : {}),
+
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000,
 
   decimalNumbers: true,
 });

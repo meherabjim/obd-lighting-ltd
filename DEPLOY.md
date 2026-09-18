@@ -38,9 +38,14 @@ cPanel → **MySQL Databases**
   (cPanel সাধারণত `youracct_obd_lighting` এরকম নাম দেয়)
 
 ### ২. টেবিল বানান
-cPanel → **phpMyAdmin** → বাঁ দিকে database সিলেক্ট → **Import**
-- আগে `database/schema.sql` আপলোড করুন
-- তারপর `database/seed.sql`
+`server/.env` এ database-এর তথ্য বসিয়ে নিজের কম্পিউটার থেকে এক কমান্ডেই:
+
+```bash
+npm run db:push
+```
+
+অথবা হাতে: cPanel → **phpMyAdmin** → database সিলেক্ট → **Import** →
+আগে `database/schema.sql`, তারপর `database/seed.sql`।
 
 ### ৩. ফাইল আপলোড
 cPanel → **File Manager**
@@ -221,10 +226,10 @@ pm2 restart obd-api
 
 1. **অ্যাডমিন পাসওয়ার্ড বদলান** — `obd12345` চ্যাটে লেখা হয়ে গেছে।
    Admin → Settings → Change your password
-2. **multer 2.x** — এখন 1.x আছে, যাতে জানা নিরাপত্তা সমস্যা আছে।
-   লাইভে যাওয়ার আগে আমাকে বলবেন, আপগ্রেড করে দেব।
-3. **JWT_SECRET** — লম্বা এলোমেলো হতে হবে। ছোট বা ফাঁকা দিলে সার্ভার
-   ইচ্ছা করেই চালু হবে না।
+2. **multer** — ২.x এ আপগ্রেড করা হয়েছে (১.x এ নিরাপত্তা সমস্যা ছিল)।
+   সার্ভারে `npm install` চালালেই নতুনটা বসবে।
+3. **JWT_SECRET** — কমপক্ষে ৩২ অক্ষরের এলোমেলো লেখা হতে হবে। ছোট বা ফাঁকা
+   দিলে প্রোডাকশনে সার্ভার ইচ্ছা করেই চালু হবে না।
 4. **`server/.env` কখনো কাউকে পাঠাবেন না** — ডেটাবেজের পাসওয়ার্ড ওখানে।
 5. **ডেটাবেজ ব্যাকআপ** — phpMyAdmin → Export, বা VPS-এ:
    `mysqldump -u obd -p obd_lighting > backup.sql`

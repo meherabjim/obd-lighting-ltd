@@ -8,7 +8,10 @@
     "setup": "node setup.js",
     "dev": "node dev.js",
     "build": "npm --prefix client run build",
-    "start": "npm --prefix server start"
+    "start": "npm --prefix server start",
+    "db:push": "npm --prefix server run db:push --"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

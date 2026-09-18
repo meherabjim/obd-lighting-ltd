@@ -41,7 +41,7 @@ server/uploads/products/ now holds your photos. Attached to:
   shade-double.jpg            -> Industrial Single & Double Shade
 
 NOT attached to anything, on purpose:
-  _branded-transtec-tube.png  (shows TRANSTEC's brand and packaging)
+  _branded-transtec-tube.jpg  (shows TRANSTEC's brand and packaging)
   _branded-ipower-bulb.jpg    (shows iPOWER's brand)
 These are other companies' trademarks. Put them on the site only if you
 actually resell those brands — Admin -> Products -> Edit -> Photo.

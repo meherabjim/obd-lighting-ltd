@@ -45,14 +45,21 @@ auth.get('/me', requireAdmin, (req, res) => {
 /** POST /api/auth/password — change your own password. */
 auth.post('/password', requireAdmin, asyncHandler(async (req, res) => {
   requireFields(req.body, ['currentPassword', 'newPassword']);
-  if (String(req.body.newPassword).length < 8) {
-    throw new ApiError(400, 'The new password must be at least 8 characters.');
+  const fresh = String(req.body.newPassword);
+  if (fresh.length < 10) {
+    throw new ApiError(400, 'The new password must be at least 10 characters.');
+  }
+  if (!/[a-z]/i.test(fresh) || !/\d/.test(fresh)) {
+    throw new ApiError(400, 'The new password needs both letters and numbers.');
+  }
+  if (fresh === String(req.body.currentPassword)) {
+    throw new ApiError(400, 'That is the password you already have.');
   }
   const admin = await queryOne('SELECT * FROM admins WHERE id = ?', [req.admin.id]);
   const ok = await bcrypt.compare(String(req.body.currentPassword), admin.password_hash);
   if (!ok) throw new ApiError(401, 'Your current password is incorrect.');
 
   await execute('UPDATE admins SET password_hash = ? WHERE id = ?',
-    [await bcrypt.hash(String(req.body.newPassword), 10), admin.id]);
+    [await bcrypt.hash(String(req.body.newPassword), 12), admin.id]);
   res.json({ ok: true });
 }));

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { query, queryOne, execute, withTransaction } from '../lib/db.js';
 import { asyncHandler, ApiError, requireFields, slugify, firstNumber, readPaging } from '../lib/helpers.js';
 import { requireAdmin, requireAdminRole } from '../middleware/auth.js';
-import { uploadProductImage, removeUpload } from '../middleware/upload.js';
+import { uploadProductImage, verifyUpload, removeUpload } from '../middleware/upload.js';
 import { config } from '../config.js';
 
 export const admin = Router();
@@ -160,7 +160,7 @@ async function uniqueSlug(base, ignoreId = null) {
   return `${slug}-${Date.now().toString(36)}`;
 }
 
-admin.post('/products', uploadProductImage.single('image'), asyncHandler(async (req, res) => {
+admin.post('/products', uploadProductImage.single('image'), verifyUpload, asyncHandler(async (req, res) => {
   const p = readProductBody(req.body);
   const cat = await queryOne('SELECT id FROM categories WHERE id = ?', [p.categoryId]);
   if (!cat) throw new ApiError(400, 'Pick a category that exists.');
@@ -182,7 +182,7 @@ admin.post('/products', uploadProductImage.single('image'), asyncHandler(async (
   res.status(201).json({ ok: true, id, slug });
 }));
 
-admin.put('/products/:id', uploadProductImage.single('image'), asyncHandler(async (req, res) => {
+admin.put('/products/:id', uploadProductImage.single('image'), verifyUpload, asyncHandler(async (req, res) => {
   const existing = await queryOne('SELECT * FROM products WHERE id = ?', [req.params.id]);
   if (!existing) throw new ApiError(404, 'Product not found.');
   const p = readProductBody(req.body);
@@ -343,14 +343,15 @@ admin.get('/settings', asyncHandler(async (req, res) => {
 }));
 
 admin.put('/settings', asyncHandler(async (req, res) => {
-  const entries = Object.entries(req.body || {});
+  const entries = Object.entries(req.body || {})
+    .filter(([key]) => /^[a-z][a-z0-9_]{1,59}$/.test(key));
   if (!entries.length) throw new ApiError(400, 'Nothing to save.');
   await withTransaction(async (conn) => {
     for (const [key, value] of entries) {
       await conn.query(
         `INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)
          ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`,
-        [String(key).slice(0, 60), value == null ? null : String(value)]);
+        [key, value == null ? null : String(value).slice(0, 4000)]);
     }
   });
   res.json({ ok: true });

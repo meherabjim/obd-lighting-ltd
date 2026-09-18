@@ -142,6 +142,43 @@ stored in the database and take effect without rebuilding.
 
 ---
 
+## The database lives in TiDB Cloud
+
+The live site's data sits in TiDB Cloud (a MySQL-compatible database that
+runs in the cloud, so the site keeps working whether or not your computer is
+on). Put the connection details from **TiDB Cloud -> your cluster -> Connect**
+into `server/.env`:
+
+```
+DB_HOST=gateway01.<region>.prod.aws.tidbcloud.com
+DB_PORT=4000
+DB_USER=xxxxxxxx.root
+DB_PASSWORD=...
+DB_NAME=obd_lighting
+```
+
+TLS switches itself on for any `tidbcloud.com` address — nothing else to set.
+
+Then push the whole catalogue in one command, from the project folder:
+
+```bash
+npm run db:push
+```
+
+It creates the tables, loads the 10 categories, 36 products, all their
+specification rows and the site settings, keeps your existing admin sign-in,
+and prints what landed.
+
+**It replaces everything.** If there is already data in there — products you
+added from the admin panel, uploaded photos, enquiries — it stops and asks:
+
+```bash
+npm run db:push -- --backup-first   # writes database/backup-<date>.sql, then replaces
+npm run db:push -- --replace        # replaces without a backup
+```
+
+---
+
 ## Going live later
 
 When you buy the domain and hosting:
@@ -150,8 +187,16 @@ When you buy the domain and hosting:
 2. Put `client/dist/` where your host serves the site from.
 3. Run the `server/` folder with Node (a VPS, or cPanel's *Setup Node.js App*).
 4. In `server/.env` set `NODE_ENV=production`, the live `CLIENT_ORIGIN` and
-   `PUBLIC_URL`, and a long random `JWT_SECRET`.
+   `PUBLIC_URL`, and a long random `JWT_SECRET` (32 characters or more — the
+   server refuses to start in production without one).
+   `CLIENT_ORIGIN` takes several addresses separated by commas:
+   `https://obdlighting.com,https://www.obdlighting.com`
 5. Point the site's `/api` and `/uploads` at the Node server.
+
+**Site and API on separate hosts** (the current setup — API on Render, site on
+Vercel): the address of the API is baked into the build by
+`client/.env.production`. If the API ever moves, change the line in that file
+and rebuild, or the live site will call the old address.
 
 **Note on shared cPanel hosting:** it is built for PHP, and Node.js apps only run
 there if the host offers *Setup Node.js App*. Ask them before you buy. A small VPS
@@ -192,7 +237,9 @@ Change `PORT` in `server/.env`, or the port in `client/vite.config.js`.
   against BDStall / SmartDeal in September 2026, not your prices. Correct them
   in Admin → Products.
 * Real photographs — 8 of your own photos are already in
-  `server/uploads/products/`. The rest of the range still shows drawings.
+  `server/uploads/products/`, all put on the same square white plate so the
+  grid lines up. The rest of the range shows a lettered tile until you
+  upload one.
   Two files there start with `_branded-` (Transtec tube, iPower bulb): they carry
   another company's brand, so they are NOT attached to any product. Attach them
   from Admin → Products only if you actually resell those brands.
